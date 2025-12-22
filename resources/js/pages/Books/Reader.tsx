@@ -58,6 +58,7 @@ export default function Reader({
     const viewerRef = useRef<HTMLDivElement>(null);
     const renditionRef = useRef<Rendition | null>(null);
     const bookRef = useRef<EpubBook | null>(null);
+    const searchHighlightRef = useRef<string | null>(null); // <--- BARU
 
     // UI States
     const [toc, setToc] = useState<any[]>([]);
@@ -226,6 +227,11 @@ export default function Reader({
                     opacity: 0.45,
                     'mix-blend-mode': 'multiply',
                 },
+                '.hl-search': {
+                    background: 'orange',
+                    opacity: 0.4,
+                    'mix-blend-mode': 'multiply', // Opsional, agar teks tetap hitam pekat
+                },
             });
         });
     };
@@ -305,7 +311,7 @@ export default function Reader({
         });
     };
 
-    const saveHighlight = ({
+const saveHighlight = ({
         note,
         color,
     }: {
@@ -313,19 +319,32 @@ export default function Reader({
         color?: string;
     }) => {
         if (!selectedCfiRange || !selectedText) return;
+
         router.post(
             books.highlight.store.post({ book: book.id }).url,
             { cfi_range: selectedCfiRange, text: selectedText, note, color },
             {
                 preserveScroll: true,
                 onSuccess: (page) => {
-                    // @ts-ignore
-                    const newData = page.props.flash?.highlight;
-                    if (newData) setHighlights((prev) => [...prev, newData]);
+                    // --- STEP 1: Reset UI (Tutup Modal & Bersihkan Seleksi) ---
                     setHighlightModalOpen(false);
                     setSelectedCfiRange(null);
                     setSelectedText('');
+
+                    // --- STEP 2: 🔥 SOLUSI UTAMA (Refresh Data) ---
+                    // Panggil fungsi ini agar state highlights mengambil data terbaru dari DB
+                    fetchUserData();
+
+                    // (Opsional) Jika Controller Laravel Anda sudah mengirim ->with('highlight', $data)
+                    // Anda bisa tetap menggunakan logika optimis ini untuk update UI lebih cepat:
+                    // @ts-ignore
+                    // const newData = page.props.flash?.highlight;
+                    // if (newData) setHighlights((prev) => [...prev, newData]);
                 },
+                onError: (errors) => {
+                    console.error('Gagal menyimpan highlight:', errors);
+                    alert('Gagal menyimpan highlight. Cek console.');
+                }
             },
         );
     };
@@ -432,27 +451,46 @@ export default function Reader({
         }
     }
 
-    const performSearch = async (query: string) => {
-        if (!query.trim() || !bookRef.current) {
-            setSearchResults([]);
-            return;
-        }
-        const results: SearchResult[] = [];
-        const bookInst = bookRef.current;
-        for (let i = 0; i < bookInst.spine.length; i++) {
-            const item = bookInst.spine.get(i);
+const performSearch = async (query: string) => {
+    if (!query.trim() || !bookRef.current) {
+        setSearchResults([]);
+        return;
+    }
+
+    const results: SearchResult[] = [];
+    const bookInst = bookRef.current;
+
+    // Use a standard for-loop to handle async/await correctly
+    for (let i = 0; i < bookInst.spine.length; i++) {
+        const item = bookInst.spine.get(i);
+        
+        try {
+            // 1. Load the chapter content into memory manually
+            // @ts-ignore
+            await item.load(bookInst.load.bind(bookInst));
+
+            // 2. Perform the search
             // @ts-ignore
             const found = await item.find(query);
+
+            // 3. Unload to free up memory (Crucial for large books!)
+            // @ts-ignore
+            item.unload();
+
             found.forEach((f: any) =>
                 results.push({
                     cfi: f.cfi,
                     excerpt: f.excerpt,
                     chapter: item.href,
-                }),
+                })
             );
+        } catch (err) {
+            console.warn(`Skipping search in chapter ${i}`, err);
         }
-        setSearchResults(results);
-    };
+    }
+
+    setSearchResults(results);
+};
 
     // --- 5. RENDER UI ---
     return (
@@ -571,8 +609,20 @@ export default function Reader({
                 onClose={() => setSearchOpen(false)}
                 results={searchResults}
                 onSearch={performSearch}
-                onSelect={(cfi: string) => {
-                    renditionRef.current?.display(cfi);
+                onSelect={(cfi: string) => { // <--- LOGIKA BARU DISINI
+                    const rend = renditionRef.current;
+                    if (rend) {
+                        // Hapus yg lama
+                        if (searchHighlightRef.current) {
+                            rend.annotations.remove(searchHighlightRef.current, 'highlight');
+                        }
+                        // Tambah yg baru
+                        rend.annotations.add('highlight', cfi, {}, null, 'hl-search');
+                        searchHighlightRef.current = cfi;
+                        
+                        // Jalan
+                        rend.display(cfi);
+                    }
                     setSearchOpen(false);
                 }}
             />

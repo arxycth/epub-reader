@@ -9,9 +9,9 @@ class HighlightController extends Controller
 {
     public function index(Book $book)
     {
-        if (auth()->id() !== $book->user_id) {
-            abort(403, 'Unauthorized');
-        }
+        // if (auth()->id() !== $book->user_id) {
+        //     abort(403, 'Unauthorized');
+        // }
         
         $highlights = Highlight::where('book_id', $book->id)
             ->where('user_id', auth()->id())
@@ -22,9 +22,9 @@ class HighlightController extends Controller
 
     public function store(Request $request, Book $book)
     {
-        if (auth()->id() !== $book->user_id) {
-            abort(403, 'Unauthorized');
-        }
+        // if (auth()->id() !== $book->user_id) {
+        //     abort(403, 'Unauthorized');
+        // }
         
         $data = $request->validate([
             'cfi_range' => 'required|string',
@@ -47,9 +47,9 @@ class HighlightController extends Controller
 
     public function destroy(Book $book, Highlight $highlight)
     {
-        if (auth()->id() !== $book->user_id) {
-            abort(403, 'Unauthorized');
-        }
+        // if (auth()->id() !== $book->user_id) {
+        //     abort(403, 'Unauthorized');
+        // }
         
         $highlight->delete();
         return response()->json(['deleted' => true]);

@@ -9,9 +9,9 @@ class BookmarkController extends Controller
 {
     public function index(Book $book)
     {
-        if (auth()->id() !== $book->user_id) {
-            abort(403, 'Unauthorized');
-        }
+        // if (auth()->id() !== $book->user_id) {
+        //     abort(403, 'Unauthorized');
+        // }
         
         $bookmarks = Bookmark::where('book_id', $book->id)
             ->where('user_id', auth()->id())
@@ -22,9 +22,9 @@ class BookmarkController extends Controller
 
     public function store(Request $request, Book $book)
     {
-        if (auth()->id() !== $book->user_id) {
-            abort(403, 'Unauthorized');
-        }
+        // if (auth()->id() !== $book->user_id) {
+        //     abort(403, 'Unauthorized');
+        // }
         
         $data = $request->validate([
             'cfi' => 'required|string',
@@ -43,9 +43,9 @@ class BookmarkController extends Controller
 
     public function destroy(Book $book, Bookmark $bookmark)
     {
-        if ($bookmark->user_id !== auth()->id()) {
-            abort(403);
-        }
+        // if ($bookmark->user_id !== auth()->id()) {
+        //     abort(403);
+        // }
 
         $bookmark->delete();
 
