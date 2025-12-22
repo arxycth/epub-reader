@@ -31,6 +31,7 @@ i18n.use(LanguageDetector)
 
                     common: {
                         search_placeholder: 'Cari judul buku atau penulis...',
+                        search_in_book: 'Cari kata dalam buku....',
                         apply_filter: 'Terapkan Filter',
                         loading: 'Memuat...',
                         prev: 'Sebelumnya',
@@ -314,6 +315,7 @@ i18n.use(LanguageDetector)
                     },
                     common: {
                         search_placeholder: 'Search book title or author...',
+                        search_in_book: 'Search word in the book....',
                         apply_filter: 'Apply Filter',
                         loading: 'Loading...',
                         prev: 'Previous',

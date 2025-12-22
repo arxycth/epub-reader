@@ -30,7 +30,7 @@ export default function SearchPanel({
             <form onSubmit={submit} className="border-b p-4">
                 <input
                     type="text"
-                    placeholder={t('common.search_placeholder')}
+                    placeholder={t('common.search_in_book')}
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
                     className="w-full rounded border p-2 dark:border-neutral-700 dark:bg-neutral-800"

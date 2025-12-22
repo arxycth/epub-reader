@@ -143,7 +143,6 @@ public function file(Book $book)
     // }
 
     $path = storage_path('app/public/epubs/' . $book->filename);
-    dd($path);
 
     if (!file_exists($path)) {
         abort(404, 'File not found');
