@@ -11,12 +11,14 @@ import { edit } from '@/routes/profile';
 import { type User } from '@/types';
 import { Link, router } from '@inertiajs/react';
 import { LogOut, Settings } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 interface UserMenuContentProps {
     user: User;
 }
 
 export function UserMenuContent({ user }: UserMenuContentProps) {
+    const { t } = useTranslation();
     const cleanup = useMobileNavigation();
 
     const handleLogout = () => {
@@ -41,8 +43,8 @@ export function UserMenuContent({ user }: UserMenuContentProps) {
                         prefetch
                         onClick={cleanup}
                     >
-                        <Settings className="mr-2" />
-                        Settings
+                        <Settings className="mr-2 h-4 w-4" />
+                        {t('user_menu.settings')}
                     </Link>
                 </DropdownMenuItem>
             </DropdownMenuGroup>
@@ -55,8 +57,8 @@ export function UserMenuContent({ user }: UserMenuContentProps) {
                     onClick={handleLogout}
                     data-test="logout-button"
                 >
-                    <LogOut className="mr-2" />
-                    Log out
+                    <LogOut className="mr-2 h-4 w-4" />
+                    {t('user_menu.logout')}
                 </Link>
             </DropdownMenuItem>
         </>

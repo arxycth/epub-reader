@@ -1,61 +1,55 @@
-import { NavFooter } from '@/components/nav-footer';
 import { NavMain } from '@/components/nav-main';
 import { NavUser } from '@/components/nav-user';
 import {
     Sidebar,
     SidebarContent,
     SidebarFooter,
+    SidebarGroup,
+    SidebarGroupContent,
+    SidebarGroupLabel,
     SidebarHeader,
     SidebarMenu,
     SidebarMenuButton,
     SidebarMenuItem,
-    SidebarGroup,         // Tambahan
-    SidebarGroupLabel,    // Tambahan
-    SidebarGroupContent,  // Tambahan
 } from '@/components/ui/sidebar';
-import AppLogo from './app-logo';
 import { Link } from '@inertiajs/react';
-
-// Import ikon Globe
-import { 
-    Home, 
-    Library, 
-    UploadCloud, 
-    Globe, // <--- Ikon untuk Halaman Depan
-    LogOut
-} from 'lucide-react';
+import { Globe, Home, Library, UploadCloud } from 'lucide-react';
+import { useTranslation } from 'react-i18next'; // Import i18n
+import AppLogo from './app-logo';
 
 import { type NavItem } from '@/types';
 
-// Menu Utama Dashboard
-const mainNavItems: NavItem[] = [
-    {
-        title: 'Dashboard',
-        href: route('dashboard'),
-        icon: Home,
-    },
-    {
-        title: 'Perpustakaan',
-        href: route('books.index'),
-        icon: Library,
-    },
-    {
-        title: 'Upload Buku',
-        href: route('books.upload'),
-        icon: UploadCloud,
-    },
-];
-
-// Menu "Website Utama"
-const websiteNavItems: NavItem[] = [
-    {
-        title: 'Halaman Depan',
-        href: '/', // Arahkan ke root URL (Landing Page)
-        icon: Globe,
-    },
-];
-
 export function AppSidebar() {
+    const { t } = useTranslation();
+
+    // Menu Utama Dashboard (Sekarang di dalam komponen agar t() bekerja)
+    const mainNavItems: NavItem[] = [
+        {
+            title: t('sidebar.dashboard'),
+            href: route('dashboard'),
+            icon: Home,
+        },
+        {
+            title: t('sidebar.library'),
+            href: route('books.index'),
+            icon: Library,
+        },
+        {
+            title: t('sidebar.upload'),
+            href: route('books.upload'),
+            icon: UploadCloud,
+        },
+    ];
+
+    // Menu "Website Utama"
+    const websiteNavItems: NavItem[] = [
+        {
+            title: t('sidebar.front_page'),
+            href: '/',
+            icon: Globe,
+        },
+    ];
+
     return (
         <Sidebar collapsible="icon" variant="inset">
             <SidebarHeader>
@@ -74,17 +68,23 @@ export function AppSidebar() {
                 {/* 1. Menu Dashboard */}
                 <NavMain items={mainNavItems} />
 
-                {/* 2. Pemisah / Grup Baru untuk Link ke Web Utama */}
+                {/* 2. Grup Aplikasi / Web Utama */}
                 <SidebarGroup className="mt-auto group-data-[collapsible=icon]:hidden">
-                    <SidebarGroupLabel>Aplikasi</SidebarGroupLabel>
+                    <SidebarGroupLabel>
+                        {t('sidebar.application_group')}
+                    </SidebarGroupLabel>
                     <SidebarGroupContent>
                         <SidebarMenu>
                             {websiteNavItems.map((item) => (
                                 <SidebarMenuItem key={item.title}>
-                                    <SidebarMenuButton asChild tooltip={item.title}>
-                                        {/* Gunakan anchor <a> biasa agar halaman refresh total (opsional), 
-                                            atau <Link> jika Landing Page juga pakai Inertia */}
-                                        <a href={item.href} className="text-neutral-600 dark:text-neutral-400">
+                                    <SidebarMenuButton
+                                        asChild
+                                        tooltip={item.title}
+                                    >
+                                        <a
+                                            href={item.href}
+                                            className="text-neutral-600 dark:text-neutral-400"
+                                        >
                                             <item.icon />
                                             <span>{item.title}</span>
                                         </a>

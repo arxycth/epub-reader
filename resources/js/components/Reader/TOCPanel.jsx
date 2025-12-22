@@ -1,30 +1,30 @@
-import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 export default function TOCPanel({ toc, onSelect, isOpen, onClose }) {
-  return (
-    <div
-      className={`
-        fixed top-0 left-0 h-full w-64 bg-white dark:bg-neutral-900 shadow-xl
-        transform transition-transform duration-300 z-50
-        ${isOpen ? 'translate-x-0' : '-translate-x-full'}
-      `}
-    >
-      <div className="p-4 border-b flex items-center justify-between">
-        <h2 className="text-lg font-semibold">Daftar Isi</h2>
-        <button onClick={onClose} className="text-sm">Close</button>
-      </div>
+    const { t } = useTranslation();
 
-      <div className="p-4 space-y-2 overflow-y-auto h-[calc(100%-60px)]">
-        {toc.map((item) => (
-          <button
-            key={item.href}
-            onClick={() => onSelect(item.href)}
-            className="text-left block w-full p-2 hover:bg-neutral-200 dark:hover:bg-neutral-800 rounded"
-          >
-            {item.label || item.title}
-          </button>
-        ))}
-      </div>
-    </div>
-  );
+    return (
+        <div
+            className={`fixed top-0 left-0 z-50 h-full w-64 transform bg-white shadow-xl transition-transform duration-300 dark:bg-neutral-900 ${isOpen ? 'translate-x-0' : '-translate-x-full'} `}
+        >
+            <div className="flex items-center justify-between border-b p-4">
+                <h2 className="text-lg font-semibold">{t('reader.toc')}</h2>
+                <button onClick={onClose} className="text-sm">
+                    {t('common.close')}
+                </button>
+            </div>
+
+            <div className="h-[calc(100%-60px)] space-y-2 overflow-y-auto p-4">
+                {toc.map((item) => (
+                    <button
+                        key={item.href}
+                        onClick={() => onSelect(item.href)}
+                        className="block w-full rounded p-2 text-left hover:bg-neutral-200 dark:hover:bg-neutral-800"
+                    >
+                        {item.label || item.title}
+                    </button>
+                ))}
+            </div>
+        </div>
+    );
 }
