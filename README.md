@@ -30,8 +30,8 @@ Pilih metode instalasi sesuai kebutuhan Anda:
 
 1. **Clone Repository:**
 ```bash
-git clone https://github.com/username/repo-anda.git
-cd repo-anda
+git clone https://github.com/arxycth/epub-reader/
+cd epub-reader
 
 ```
 
@@ -129,3 +129,4 @@ Buka browser di `http://localhost:8000`.
 * Pastikan folder `storage/` dan `bootstrap/cache/` memiliki izin tulis (writable permission).
 
 ---
+
